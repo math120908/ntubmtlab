@@ -1,0 +1,108 @@
+extends layout
+
+block content
+  div.jumbotron
+    h2(style="text-align:center;")
+      img(src="images/logo.png", alt="進擊的羽球", height="300", width="640")
+
+
+  // Show Update Information 
+  div(class="alert alert-warning alert-dismissible", role="alert")
+    button(type="button", class="close", data-dismiss="alert") &times;
+    strong Last Update: #{lastupdate}
+
+  // Show WakeUpEarly Information
+  div(class="alert alert-info")
+    each ent, idx in wakeupInfos
+      span
+        a(href="#{ent.url}", target="_blank") #{ent.title}
+        br
+
+  // Schedule
+  //-if isMobile  
+  //-  div.well
+  //-    input(type="text", class="span2", id="dp1")
+  ul(class="nav nav-tabs", role="tablist")
+    li
+      a(onclick="showWeek(-1)", role="tab", data-toggle="tab") 上週 
+    li.active
+      a(onclick="showWeek(0)", role="tab", data-toggle="tab") 本週 
+    li
+      a(onclick="showWeek(1)", role="tab", data-toggle="tab") 下週
+    li
+      a(onclick="showWeek(2)", role="tab", data-toggle="tab") 下下週
+
+  //-span(class="glyphicon glyphicon-chevron-left")
+  //-span(class="glyphicon glyphicon-chevron-right")
+  ul(class="nav nav-tabs", role="tablist")
+    li.active
+      a(href=".place1", role="tab", data-toggle="tab") 新體1F
+    li
+      a(href="#place2", role="tab", data-toggle="tab") 新體3F
+    li
+      a(href="#place3", role="tab", data-toggle="tab") 舊體
+  
+  div.scroll
+    div.tab-content
+      div.place1(class="tab-pane fade in active")
+        mixin showSchedule(sid)
+          table(class="table table-hover",id="#{sid}")
+            thead
+              tr
+                th.headcol Date
+                each day,idx in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+                  th #{day}
+                th.headcol Date
+            tbody
+              each key,val in {6:"6~8 晨羽",8:'8~9',9:'9~10',10:'10~11',11:'11~12',12:'12~13',13:'13~14',14:'14~15',15:'15~16',16:'16~17',17:'17~18',18:'18~19',19:'19~20',20:'20~21',21:'21~22'}
+                tr
+                  td.headcol #{key}
+                  each day,idx in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+                    td
+                  td.headcol #{key}
+            tfoot
+              tr
+                th.headcol Date
+                each day,idx in ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+                  th #{day}
+                th.headcol Date
+        +showSchedule('schedule1')
+      div#place2(class="tab-pane fade")
+        +showSchedule('schedule2')
+      div#place3(class="tab-pane fade")
+        +showSchedule('schedule3')
+
+  h3#intro 說明
+  ul
+    li 出現
+      img(src="images/rent.gif", alt="", height="16", width="16")
+      | 代表有場
+    li 舊體資料為網站提供資料，僅供參考。實際資訊需親自到舊體門口看公告才知道。（謎之聲：但其實現場公告也只是僅供參考...剩下的靠經驗Orz）
+    li 問號或空白代表資料尚未出現，請耐心等待(?)
+    li 綠底是新體有場，紅底是新體場被借光了OAQ
+
+  h3#news 最新消息
+  ul
+    li [2014/8/19] Mobile版UI修改. 
+    li [2014/8/15] 更改backend架構從php搬至nodejs.
+    li [2014/7/27] 更改圖像 requested by 慧詩XD.
+    li [2014/1/10] 增加網頁執行效率.
+    li [2013/7/26] 正式上線嚕.
+
+
+
+  script(type="text/javascript", src="js/loader.js")
+  script(type="text/javascript")
+    | showWeek(0);
+
+  //-if isMobile  
+  //-  script(type="text/javascript", src="js/bootstrap-datepicker.js")
+  //-  script(type="text/javascript")
+  //-    | $('#dp1').val(Date.today().toString('yyyy/MM/dd'));
+  //-    | $('#dp1').datepicker({ format: 'yyyy/mm/dd' }).on('changeDate',function(ev){
+  //-    |   $('#dp1').datepicker('hide');
+  //-    | });
+
+  
+  include fbshare.jade
+  //-include twittershare.jade

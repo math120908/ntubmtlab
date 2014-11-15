@@ -1,0 +1,71 @@
+doctype html
+html(lang="en",xmlns:fb='http://www.facebook.com/2008/fbml',xmlns:og='http://ogp.me/ns#')
+  head
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="description", content="NTU badminton information system")
+    meta(name="author", content="small2kuo")
+    meta(property="og:image", content="http://kiwilab.csie.org/badminton/images/logo.png")
+    title= title
+    <link rel="shortcut icon" href="http://kiwilab.csie.org/badminton/images/favicon.ico" />
+    link(rel="image_src", href="http://kiwilab.csie.org/badminton/images/logo.png")
+    link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.min.css')
+    link(rel="stylesheet", href="bootstrap/dist/css/bootstrap-theme.min.css")
+    link(rel="stylesheet", href='css/style.css')
+    style(type="text/css")
+      |   body {
+      |     padding-top: 60px;
+      |     padding-bottom: 40px;
+      |   }
+      |   .jumbotron{
+      |      padding-top: 30px;
+      |      padding-bottom: 30px;
+      |   }
+      |   td {
+      |     text-align: center;
+      |   }
+      |   th {
+      |     text-align: center;
+      |   }
+      |   img {
+      |     max-width: 100%;
+      |     max-height: 100%;
+      |   }
+    //-script(type="text/javascript", src="js/sprintf.min.js")
+
+  body
+    div(class="navbar navbar-inverse navbar-fixed-top", role='navigation')
+      div(class="container")
+        div(class="navbar-header")
+          button(type="button", class="navbar-toggle collapsed", data-toggle="collapse", data-target=".navbar-collapse")
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a(class="navbar-brand" href="index") Badminton
+        div(class="navbar-collapse collapse")
+          ul(class="nav navbar-nav")
+            li.active: a(href="index") Home
+            li: a(href="http://ntusportscenter.ntu.edu.tw/") 台大體育館
+            li: a(href="http://www.mc.ntu.edu.tw/staff/studentaffair/area/area.htm") 台大醫體
+            - var thisYear = (new Date()).getFullYear();
+            li: a(href="http://view.officeapps.live.com/op/view.aspx?src=http%3A%2F%2Fwww.mc.ntu.edu.tw%2Fstaff%2Fstudentaffair%2Farea%2Fgym_#{thisYear-1911}(1-12).xls") 台大醫體(場地時間)
+            li: a(href="#intro") 使用說明
+            li: a(href="#news") 最新消息
+            li: a(href="http://www.cwb.gov.tw/V7/forecast/week/week.htm") 天氣預報
+            li: a(href="http://www.badmintonrepublic.com/phpbb3/viewforum.php?f=18") 比賽消息
+            li: a(href="http://blog.xuite.net/wantech/blog") 比賽消息2
+
+    script(type="text/javascript", src="datejs/build/production/date.min.js")
+    script(type="text/javascript",src="jquery/dist/jquery.min.js")
+    div.container
+      block content
+      hr
+      footer
+        p 
+          | &copy; Copyright Kiwilab, 
+          a(href="mailto:small2kuo+badminton@gmail.com") small2kuo
+          | .
+
+    script(type='text/javascript', src='bootstrap/dist/js/bootstrap.min.js')
+    include galytics.jade

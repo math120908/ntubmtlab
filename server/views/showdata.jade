@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1  Data Entries
+    ul
+      each ent, i in dataEnts
+        li
+          a #{ent.detailURL} #{ent.date} #{ent.time}
+
