@@ -5,6 +5,7 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var sass = require('node-sass');
+var sassMiddleware = require('node-sass-middleware')
 var compression = require('compression');
 
 var routes = require('./routes/index');
@@ -28,7 +29,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(compression());
-app.use(sass.middleware({
+app.use(sassMiddleware({
    src: path.join(__dirname,"private"),
    dest: path.join(__dirname,'public'),
    debug: true,

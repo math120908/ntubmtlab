@@ -15,6 +15,7 @@
     "jade": "*",
     "compression": "*",
     "node-sass": "*",
+    "node-sass-middleware": "*",
     "mongo": "*",
     "monk": "*",
     "datejs": "*",
