@@ -13,7 +13,7 @@ def getURLcontent(url):
       req = urllib2.Request(url)
       cj = cookielib.CookieJar()
       opener = urllib2.build_opener(NoExceptionCookieProcesser(cj))
-      response = opener.open(req)
+      response = opener.open(req, timeout=10)
       content = response.read().encode('UTF-8')
       response.close()
    except:
