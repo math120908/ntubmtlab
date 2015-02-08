@@ -87,5 +87,9 @@ function showScheduleOneDay( showday ){
 }
 
 function showWeek(i){
-   showScheduleOneWeek( Date.mon().add(i).week() );
+   if( Date.today().toString('ddd') == 'Sun' )
+      startdate = Date.today().previous().mon();
+   else
+      startdate = Date.mon();
+   showScheduleOneWeek( startdate.add(i).week() );
 }
