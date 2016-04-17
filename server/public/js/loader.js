@@ -40,8 +40,8 @@ function setSchedule( datelist, schedule, place, $table ){
             }
             $newNode.append(dat.text);
          }else if(place == "Old"){
-            if(schedule[date.date][Math.floor(time/2)*2]) 
-               dat = schedule[date.date][Math.floor(time/2)*2][place];
+            if(schedule[date.date][time]) 
+               dat = schedule[date.date][time][place];
             if(!dat)
                $newNode.html('?');
             else if(!dat.abbr){
