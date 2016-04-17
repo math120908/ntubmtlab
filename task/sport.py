@@ -77,7 +77,7 @@ def oldSportLookUp(querydate=datetime.date.today()):
             text = tds[j].getText().strip()
             detailURL = re.findall( '(showact.aspx?[^\']*)', str(tds[j]) )
             detailURL = ("http://ntusportscenter.ntu.edu.tw/ntu/front/%s"%detailURL[0]) if len(detailURL)>0 else ''
-            schedule[j-1][(i-1)*2+6] = text,detailURL
+            schedule[j-1][i-1] = text,detailURL
    return schedule
 
 
@@ -131,16 +131,31 @@ if __name__ == "__main__":
             if schedule2 == None : continue
             for d in schedule2.values():
                print d['date'],'\t',
-               for i in range(6,22,2):
+               for i, val in enumerate([8,10,12,13,15,17,18,20]):
                   print d
                   ent={'date':d['date'].strftime("%Y/%m/%d"),
-                     'time':i,
+                     'time':val,
                      'text':d[i][0],
                      'abbr':d[i][0].decode('UTF8')[:4],
                      'place':'Old',
                      'savetime':today.strftime('%Y/%m/%d %H:%M:%S'),
                      'detailURL':d[i][1].replace("&amp;","&")}
-                  db.update( {'date':d['date'].strftime("%Y/%m/%d"), 'time':i, 'place':'Old'},
+                  db.update( {'date':d['date'].strftime("%Y/%m/%d"), 'time':val, 'place':'Old'},
+                        ent, True )
+                  print ent
+                  
+                  if val == 12:
+                      continue
+                  val = val + 1
+                  print d
+                  ent={'date':d['date'].strftime("%Y/%m/%d"),
+                     'time':val,
+                     'text':d[i][0],
+                     'abbr':d[i][0].decode('UTF8')[:4],
+                     'place':'Old',
+                     'savetime':today.strftime('%Y/%m/%d %H:%M:%S'),
+                     'detailURL':d[i][1].replace("&amp;","&")}
+                  db.update( {'date':d['date'].strftime("%Y/%m/%d"), 'time':val, 'place':'Old'},
                         ent, True )
                   print ent
 
