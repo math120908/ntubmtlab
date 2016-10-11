@@ -57,6 +57,7 @@ if __name__ == "__main__":
       url = "http://ntusportscenter.ntu.edu.tw/ntu/front/%s" %url[0]
       year,month = re.findall( u'([0-9]*)年([0-9]*)月' , result.text )[0]
       year = int(year); month = int(month)
+      if year < 1000 : year+=1911
       #if month < datetime.today().month:
       #   continue
       ent={ 'date':'%s/%02d'%(year,month),
@@ -84,8 +85,8 @@ if __name__ == "__main__":
                   'savetime':datetime.today().strftime('%Y/%m/%d %H:%M:%S'),
                   'detailURL':url}
             db.update( {'date':"%s/%02d/%02d"%(year,month,date), 'time':6, 'place':'New %d'%floor},
-                  ent, True )
-            #print ent
+                      ent, True )
+            print ent
 
 
       #for enable in dateinfo:

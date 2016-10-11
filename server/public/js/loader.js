@@ -19,10 +19,10 @@ function setSchedule( datelist, schedule, place, $table ){
          $(tbltds[j+1]).removeClass("success");
          $(tbltds[j+1]).removeClass("error");
          $newNode = $('<p>');
-         if( place == "New 1" || place == "New 3" ){
+         if( place == "New 1" || place == "New 3" ){ 
             if(schedule[date.date][time]) dat = schedule[date.date][time][place];
 
-            if( !dat ) dat = {text:"?"};
+            if( typeof(dat) === 'undefined' ) dat = {text:"?"};
             if( dat.remain + dat.used > 0 ){
                $aNode = $('<a>', {"href":dat.detailURL, "target":"_blank"});
                $(tbltds[j+1]).addClass(dat.remain?'success':'error');
