@@ -6,7 +6,8 @@ sys.setdefaultencoding('utf8')
 import re
 from BeautifulSoup import BeautifulSoup
 from datetime import datetime
-from libsport import getURLcontent,db
+from libsport import get_url_content,db
+from IPython import embed
 
 def parseWakeUp( content ):
    lines = content.split('\r')
@@ -50,12 +51,15 @@ def parseWakeUp( content ):
    return enable
 
 if __name__ == "__main__":
-   soup = BeautifulSoup(getURLcontent('http://ntusportscenter.ntu.edu.tw/ntu/front/news.aspx'))
+   soup = BeautifulSoup(get_url_content('http://ntusportscenter.ntu.edu.tw/ntu/front/news.aspx'))
    lbd = lambda a: a.get('id','').find(u'DataList1_')!=-1 and a.text.find(u'晨間球場')!=-1
    for result in soup.findAll(lbd):
       url = re.findall( '(shownews.aspx.bid=[0-9]*)' , str(result) )
       url = "http://ntusportscenter.ntu.edu.tw/ntu/front/%s" %url[0]
-      year,month = re.findall( u'([0-9]*)年([0-9]*)月' , result.text )[0]
+      try:
+          year,month = re.findall( u'([0-9]*)年([0-9]*)月' , result.text )[0]
+      except:
+          continue
       year = int(year); month = int(month)
       if year < 1000 : year+=1911
       #if month < datetime.today().month:
@@ -68,7 +72,7 @@ if __name__ == "__main__":
       db.update({'date':'%s/%02d'%(year,month)}, ent, True)
       #print ent
 
-      content = getURLcontent(ent['url'])
+      content = get_url_content(ent['url'])
       dateinfo = parseWakeUp( content )
       print sorted(dateinfo.items())
       for floor in [1,3]:

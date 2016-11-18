@@ -1,3 +1,6 @@
+function Schedule(schedule) {
+  this.schedule = schedule;
+}
 function setSchedule( datelist, schedule, place, $table ){
    var timelist = [6,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
    tblheads = $table.find("thead > tr > th");
@@ -40,11 +43,12 @@ function setSchedule( datelist, schedule, place, $table ){
             }
             $newNode.append(dat.text);
          }else if(place == "Old"){
+              console.log(dat);
             if(schedule[date.date][time]) 
                dat = schedule[date.date][time][place];
-            if(!dat)
+            if( typeof(dat) === 'undefined' )
                $newNode.html('?');
-            else if(!dat.abbr){
+            else if( !dat.abbr ){
                $newNode.append( $('<a>').css('color',"#0000FF").html(AVL_IMAGE_CODE+" 6") );
                $(tbltds[j+1]).addClass('success');
             }else

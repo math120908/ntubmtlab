@@ -6,13 +6,13 @@ sys.setdefaultencoding('utf8')
 import re
 from BeautifulSoup import BeautifulSoup
 import datetime
-from libsport import db,getURLcontent
+from libsport import db,get_url_content
 
 def newSportLookUp(floor=3,querydate=datetime.date.today()):
    FLOOR = {3:1,1:2}
    url = 'https://info2.ntu.edu.tw/facilities/PlaceGrd.aspx?nFlag=0&placeSeq=%d&dateLst=%s' \
          % (FLOOR[floor],querydate.strftime("%Y/%m/%d"))
-   content = getURLcontent(url)
+   content = get_url_content(url)
    if content == '': return
 
    schedule = dict()
@@ -54,7 +54,7 @@ def oldSportLookUp(querydate=datetime.date.today()):
    url = "http://ntusportscenter.ntu.edu.tw/ntu/front/order.aspx?d=y&acp2id=27&yearno=%s&monthno=%s&dayno=%s"\
          % (querydate.strftime("%Y"),querydate.strftime("%m"),querydate.strftime("%d"))
    schedule = dict()
-   content = getURLcontent(url)
+   content = get_url_content(url)
    if content == '': return
    soup = BeautifulSoup( content )
    table = soup.find('table', id="cal")
@@ -83,7 +83,7 @@ def oldSportLookUp(querydate=datetime.date.today()):
 
 #def sportDetailLookUp(entity):
 #   url = "https://info2.ntu.edu.tw/facilities/PlaceDetail.aspx?placeSeq=%d&bookDate=%s&beginHour=%d&endHour=%d&orderTotal=0&orderNum=0&orderNum2=0" %(entity['place'],entity['date'],entity['time'],entity['time']+1)
-#   content = getURLcontent(url)
+#   content = get_url_content(url)
 #   soup = BeautifulSoup(content)
 #   soup.find(id='lblOrderNum4')
 #   GridView1 = soup.find(id='GridView1')

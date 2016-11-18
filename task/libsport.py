@@ -5,7 +5,7 @@ from pymongo import MongoClient
 client = MongoClient('localhost', 27017)
 db = client.badminton.data
 
-def getURLcontent(url):
+def get_url_content(url):
    class NoExceptionCookieProcesser(urllib2.HTTPCookieProcessor):
          def http_error_500(self, req, fp, code, msg, hdrs): 
                  return fp
