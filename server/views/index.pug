@@ -15,7 +15,7 @@ block content
   div(class="alert alert-info")
     each ent, idx in wakeupInfos
       span
-        a(href="#{ent.url}", target="_blank") #{ent.title}
+        a(href=ent.url, target="_blank") #{ent.title}
         br
 
   // Schedule
@@ -46,7 +46,7 @@ block content
     div.tab-content
       div.place1(class="tab-pane fade in active")
         mixin showSchedule(sid)
-          table(class="table table-hover",id="#{sid}")
+          table(class="table table-hover",id=sid)
             thead
               tr
                 th.headcol Date
@@ -106,5 +106,5 @@ block content
   //-    | });
 
   
-  include fbshare.jade
-  //-include twittershare.jade
+  include fbshare.pug
+  //-include twittershare.pug
