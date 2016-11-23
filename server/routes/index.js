@@ -4,7 +4,7 @@ require('datejs');
 var Q = require('q');
 
 //RegExp
-router.param(function(name, fn){
+var regexp = function(name, fn){
    if (fn instanceof RegExp) {
       return function(req, res, next, val){
          var captures;
@@ -16,15 +16,15 @@ router.param(function(name, fn){
          }
       }
    }
-});
+};
 
 
 var placeMapping = {"1":"New 1","2":"New 3","3":"Old"};
-router.param('year', /^\d+$/);
-router.param('month', /^\d+$/);
-router.param('day', /^\d+$/);
-router.param('sttime', /^\d+$/);
-router.param('place', /^\d+$/);
+router.param('year', regexp('year',/^\d+$/));
+router.param('month', regexp('month',/^\d+$/));
+router.param('day', regexp('day',/^\d+$/));
+router.param('sttime', regexp('sttime',/^\d+$/));
+router.param('place', regexp('place',/^\d+$/));
 
 function is_mobile(req) {
    console.log(req.header('user-agent'));
@@ -66,7 +66,6 @@ homepage = function(req, res) {
           });
     });
 }
-router.get('/', homepage);
 
 function dbents2dict( dbents ){
    var dbdict = {};
@@ -82,6 +81,7 @@ function dbents2dict( dbents ){
    return dbdict;
 }
 
+router.get('/', homepage);
 router.get('/q/:year/:month/:day',function(req,res){
     var collection = req.db.get('data');
     queryEntry = { "date": req.params.year + "/" + req.params.month + "/" + req.params.day }
