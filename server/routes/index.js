@@ -111,6 +111,10 @@ router.use('/q',function(req,res,next){
     next(err);
 });
 
+router.use('/test', function(req,res,next){
+  res.render('test', {});
+});
+
 router.use('/', function(req, res){
    res.redirect('/');
 });
