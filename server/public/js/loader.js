@@ -43,7 +43,6 @@ function setSchedule( datelist, schedule, place, $table ){
             }
             $newNode.append(dat.text);
          }else if(place == "Old"){
-              console.log(dat);
             if(schedule[date.date][time]) 
                dat = schedule[date.date][time][place];
             if( typeof(dat) === 'undefined' )
