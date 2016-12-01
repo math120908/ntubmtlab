@@ -1,9 +1,14 @@
-div#output
+head
+  link(rel='stylesheet', href="css/test.css")
+  script(type="text/javascript",src="jquery/dist/jquery.min.js")
+  meta(name="viewport",content="width=device-width, initial-scale=1.0")
 
-<!-- Load Babel -->
-script(src="https://unpkg.com/babel-standalone@6/babel.min.js")
-script(src="https://unpkg.com/react@15/dist/react.min.js")
-script(src="https://unpkg.com/react-dom@15/dist/react-dom.min.js")
+body
+  div#schedule
 
-<!-- Your custom script here -->
-script(type="text/babel", src="/js/test.js")
+  script(src="https://unpkg.com/babel-standalone@6/babel.min.js")
+  script(src="https://unpkg.com/react@15/dist/react.min.js")
+  script(src="https://unpkg.com/react-dom@15/dist/react-dom.min.js")
+
+  script(type="text/babel", src="/js/test.js")
+
