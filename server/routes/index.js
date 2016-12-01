@@ -80,14 +80,29 @@ function dbents2dict( dbents ){
    }); 
    return dbdict;
 }
+function fixedData( dbents ){
+  dbents.forEach(function(ele){
+    if( ele.place == 'Old' ){
+      if( !ele.abbr ){
+        ele.remain = 6;
+        ele.used = 0;
+      }else{
+        ele.remain = ele.used = 0;
+      }
+    }
+  });
+  return dbents;
+}
 
 router.get('/', homepage);
 router.get('/q/:year/:month/:day',function(req,res){
+    if (req.params.month.length == 1) req.params.month = "0" + req.params.month;
+    if (req.params.day.length == 1) req.params.day = "0" + req.params.day;
     var collection = req.db.get('data');
     queryEntry = { "date": req.params.year + "/" + req.params.month + "/" + req.params.day }
 
     collection.find( queryEntry, function(err,ents){
-       var dbdict = dbents2dict(ents)
+       var dbdict = dbents2dict(fixedData(ents));
        //console.log(dbdict);
        res.json(dbdict);
     });
