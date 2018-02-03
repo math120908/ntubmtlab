@@ -4,8 +4,9 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 import re
-from BeautifulSoup import BeautifulSoup
 import datetime
+import requests
+from BeautifulSoup import BeautifulSoup
 from libsport import db,get_url_content
 
 def newSportLookUp(floor=3,querydate=datetime.date.today()):
@@ -80,7 +81,48 @@ def oldSportLookUp(querydate=datetime.date.today()):
             schedule[j-1][i-1] = text,detailURL
    return schedule
 
-
+def oldSportLookUp2(querydate=datetime.date.today()):
+    resp = requests.get("http://pe.ntu.edu.tw/api/rent/yearuserrent", params={
+        'rentDateS': querydate.strftime("%Y-%m-%d"),
+        'rentDateE': (querydate + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+        }
+    )
+    schedule = {}
+    plans = resp.json()
+    for plan in plans:
+        """ plan = {
+           "updatedByName": "",
+           "buildingId": 13,
+           "buildingName": "體育館及戶外運動場區",
+           "venueName": "籃球場甲(A)",
+           "yearUserUnitName": "",
+           "account": "",
+           "id": 584393,
+           "isYearUser": 0,
+           "unitName": "場地維護 17：00起(體育室)",
+           "rentDate": "2018-02-04 00:00:00",
+           "rentTimePeriod": "17:00~18:00",
+           "venueId": 78,
+           "statusConfirm": 0,
+           "statusRent": 1,
+           "statusDraw": 1,
+           "trash": 0,
+           "createdAt": "2017-12-19 15:49:46",
+           "createdBy": "舊系統匯入資料",
+           "updatedBy": ""
+         },
+        """
+        if plan.get('venueId') == 78 or plan.get('venueName') == u'體育館-綜合球場':
+            rentDateStr = plan.get('rentDate', '')
+            try:
+                rentDate = datetime.datetime.strptime(rentDateStr, '%Y-%m-%d %H:%M:%S')
+                rentTimePeriod = plan.get('rentTimePeriod', '').split(':')[0]
+                rentTimePeriod = int(rentTimePeriod)
+            except:
+                raise
+            schedule.setdefault(rentDateStr, {}).setdefault('date', rentDate)
+            schedule[rentDateStr][rentTimePeriod] = plan
+    return schedule
 #def sportDetailLookUp(entity):
 #   url = "https://info2.ntu.edu.tw/facilities/PlaceDetail.aspx?placeSeq=%d&bookDate=%s&beginHour=%d&endHour=%d&orderTotal=0&orderNum=0&orderNum2=0" %(entity['place'],entity['date'],entity['time'],entity['time']+1)
 #   content = get_url_content(url)
@@ -96,7 +138,7 @@ def oldSportLookUp(querydate=datetime.date.today()):
 if __name__ == "__main__":
    today = datetime.datetime.today()
    db.update( {'update':0} , {'update':0,'savetime':today.strftime("%Y/%m/%d %H:%M:%S")}, True )
-   for floor in [1,3,-1]:
+   for floor in [-1, 1, 3]:
       print "#%s" % {-1:"Old",3:"New 3",1:"New 1"}[floor]
       for i in xrange(0,3):
          querydate = today + datetime.timedelta(days=7*i)
@@ -127,36 +169,41 @@ if __name__ == "__main__":
                print ''
          # Old Sport
          else:
-            schedule2 = oldSportLookUp(querydate=querydate.date())
-            if schedule2 == None : continue
-            for d in schedule2.values():
-               print d['date'],'\t',
-               for i, val in enumerate([8,10,12,13,15,17,18,20]):
-                  print d
-                  ent={'date':d['date'].strftime("%Y/%m/%d"),
-                     'time':val,
-                     'text':d[i][0],
-                     'abbr':d[i][0].decode('UTF8')[:4],
-                     'place':'Old',
-                     'savetime':today.strftime('%Y/%m/%d %H:%M:%S'),
-                     'detailURL':d[i][1].replace("&amp;","&")}
-                  db.update( {'date':d['date'].strftime("%Y/%m/%d"), 'time':val, 'place':'Old'},
-                        ent, True )
+            schedule2 = oldSportLookUp2(querydate=querydate.date())
+            if not schedule2:
+                continue
+            for d_plans in schedule2.values():
+               print d_plans['date'],'\t',
+               for val in [8,10,12,13,15,17,18,20]:
+                  print d_plans
+                  cur_date = d_plans['date'].strftime("%Y/%m/%d") 
+                  unitName = d_plans.get(val, {}).get('unitName') or ''
+                  ent={
+                        'date': cur_date,
+                        'time': val,
+                        'text': unitName,
+                        'abbr': unitName.decode('UTF8')[:4],
+                        'place': 'Old',
+                        'savetime': today.strftime('%Y/%m/%d %H:%M:%S'),
+                        'detailURL': ''
+                    }
+                  db.update( {'date':cur_date, 'time':val, 'place':'Old'}, ent, True )
                   print ent
                   
                   if val == 12:
                       continue
                   val = val + 1
-                  print d
-                  ent={'date':d['date'].strftime("%Y/%m/%d"),
-                     'time':val,
-                     'text':d[i][0],
-                     'abbr':d[i][0].decode('UTF8')[:4],
-                     'place':'Old',
-                     'savetime':today.strftime('%Y/%m/%d %H:%M:%S'),
-                     'detailURL':d[i][1].replace("&amp;","&")}
-                  db.update( {'date':d['date'].strftime("%Y/%m/%d"), 'time':val, 'place':'Old'},
-                        ent, True )
+                  print d_plans
+                  ent={
+                        'date': cur_date,
+                        'time': val,
+                        'text': unitName,
+                        'abbr': unitName.decode('UTF8')[:4],
+                        'place': 'Old',
+                        'savetime': today.strftime('%Y/%m/%d %H:%M:%S'),
+                        'detailURL': ''
+                    }
+                  db.update( {'date':cur_date, 'time':val, 'place':'Old'}, ent, True )
                   print ent
 
 ##########################
