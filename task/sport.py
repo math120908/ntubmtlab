@@ -170,7 +170,7 @@ def oldSportLookUp2(querydate=datetime.date.today()):
             except:
                 raise
             while beginDate <= endDate:
-                cur_date = beginDate.strftime("%Y-%m-%d")
+                cur_date = beginDate.strftime("%Y-%m-%d %H:%M:%S")
                 schedule.setdefault(cur_date, {}).setdefault('date', beginDate)
                 for intv in intvs:
                     schedule[cur_date][intv] = {'text': plan.get('activityName') or ''}
@@ -193,8 +193,8 @@ if __name__ == "__main__":
    today = datetime.datetime.today()
    db.update( {'update':0} , {'update':0,'savetime':today.strftime("%Y/%m/%d %H:%M:%S")}, True )
    for floor in [-1, 1, 3]:
-      print "#%s" % {-1:"Old",3:"New 3",1:"New 1"}[floor]
-      for i in xrange(0,3):
+      print """# {0} \n# {1:^20}\n# {0}""".format('=' * 20, {-1:"Old",3:"New 3",1:"New 1"}[floor])
+      for i in xrange(0,1):
          querydate = today + datetime.timedelta(days=7*i)
          # New Sport
          if floor>0:
