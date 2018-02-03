@@ -6,8 +6,11 @@ sys.setdefaultencoding('utf8')
 import re
 import datetime
 import requests
+import json
+from collections import OrderedDict
+
 from BeautifulSoup import BeautifulSoup
-from libsport import db,get_url_content
+from libsport import db, get_url_content
 
 def newSportLookUp(floor=3,querydate=datetime.date.today()):
    FLOOR = {3:1,1:2}
@@ -82,12 +85,13 @@ def oldSportLookUp(querydate=datetime.date.today()):
    return schedule
 
 def oldSportLookUp2(querydate=datetime.date.today()):
+    # Yearly Activity
     resp = requests.get("http://pe.ntu.edu.tw/api/rent/yearuserrent", params={
         'rentDateS': querydate.strftime("%Y-%m-%d"),
         'rentDateE': (querydate + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
         }
     )
-    schedule = {}
+    schedule = OrderedDict()
     plans = resp.json()
     for plan in plans:
         """ plan = {
@@ -112,7 +116,7 @@ def oldSportLookUp2(querydate=datetime.date.today()):
            "updatedBy": ""
          },
         """
-        if plan.get('venueId') == 78 or plan.get('venueName') == u'體育館-綜合球場':
+        if plan.get('venueId') == 67 or plan.get('venueName') == u'體育館-綜合球場':
             rentDateStr = plan.get('rentDate', '')
             try:
                 rentDate = datetime.datetime.strptime(rentDateStr, '%Y-%m-%d %H:%M:%S')
@@ -121,7 +125,57 @@ def oldSportLookUp2(querydate=datetime.date.today()):
             except:
                 raise
             schedule.setdefault(rentDateStr, {}).setdefault('date', rentDate)
-            schedule[rentDateStr][rentTimePeriod] = plan
+            schedule[rentDateStr][rentTimePeriod] = {'text': plan.get('unitName') or ''}
+    # Rent Activity
+    resp = requests.get('http://pe.ntu.edu.tw/api/rent/activityused', params={
+        'sdate': querydate.strftime("%Y-%m-%d"),
+        'edate': (querydate + datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+        }
+    )
+    plans = resp.json()
+    for plan in plans:
+        """{
+          "updatedByName": "場地租借管理者",
+          "buildingName": "體育館及戶外運動場區",
+          "venueName": "體育館-綜合球場",
+          "buildingVenueName": "體育館及戶外運動場區-體育館-綜合球場",
+          "id": 10979,
+          "activityName": "男籃校隊訓練",
+          "unitName": "體育室",
+          "beginDate": "2018-02-13 00:00:00",
+          "endDate": "2018-02-13 00:00:00",
+          "timePeriod": [
+            "08:00~10:00",
+            "10:00~12:00",
+            "12:00~13:00",
+            "13:00~15:00",
+            "15:00~17:00"
+          ],
+          "buildingId": 13,
+          "venueId": 67,
+          "trash": 0,
+          "createdAt": "2018-01-31 12:33:28",
+          "createdBy": "ntupe_oduser",
+          "updatedAt": "2018-01-31 12:33:28",
+          "updatedBy": "ntupe_oduser"
+        },
+        """
+        if plan.get('venueId') == 67 or plan.get('venueName') == u'體育館-綜合球場':
+            beginDateStr = plan.get('beginDate', '')
+            endDateStr = plan.get('endDate', '')
+            try:
+                beginDate = datetime.datetime.strptime(beginDateStr, '%Y-%m-%d %H:%M:%S')
+                endDate= datetime.datetime.strptime(endDateStr, '%Y-%m-%d %H:%M:%S')
+                intvs = [int(intv.split(':')[0]) for intv in plan.get('timePeriod', [])]
+            except:
+                raise
+            while beginDate <= endDate:
+                cur_date = beginDate.strftime("%Y-%m-%d")
+                schedule.setdefault(cur_date, {}).setdefault('date', beginDate)
+                for intv in intvs:
+                    schedule[cur_date][intv] = {'text': plan.get('activityName') or ''}
+                beginDate += datetime.timedelta(days=1)
+
     return schedule
 #def sportDetailLookUp(entity):
 #   url = "https://info2.ntu.edu.tw/facilities/PlaceDetail.aspx?placeSeq=%d&bookDate=%s&beginHour=%d&endHour=%d&orderTotal=0&orderNum=0&orderNum2=0" %(entity['place'],entity['date'],entity['time'],entity['time']+1)
@@ -173,11 +227,10 @@ if __name__ == "__main__":
             if not schedule2:
                 continue
             for d_plans in schedule2.values():
-               print d_plans['date'],'\t',
+               print d_plans['date'],'\t'
                for val in [8,10,12,13,15,17,18,20]:
-                  print d_plans
                   cur_date = d_plans['date'].strftime("%Y/%m/%d") 
-                  unitName = d_plans.get(val, {}).get('unitName') or ''
+                  unitName = d_plans.get(val, {}).get('text') or ''
                   ent={
                         'date': cur_date,
                         'time': val,
@@ -188,12 +241,11 @@ if __name__ == "__main__":
                         'detailURL': ''
                     }
                   db.update( {'date':cur_date, 'time':val, 'place':'Old'}, ent, True )
-                  print ent
+                  print json.dumps(ent, indent=2)
                   
                   if val == 12:
                       continue
                   val = val + 1
-                  print d_plans
                   ent={
                         'date': cur_date,
                         'time': val,
@@ -204,7 +256,7 @@ if __name__ == "__main__":
                         'detailURL': ''
                     }
                   db.update( {'date':cur_date, 'time':val, 'place':'Old'}, ent, True )
-                  print ent
+                  print json.dumps(ent, indent=2)
 
 ##########################
 #map ={ 'A':0 , 'B':1 , 'C':2 , 'D':3 , 'E':4 , 'F':5 , 'G':6 , 'H':7 , 'I':8 , 'J':9 , 'K':10, 'L':11, 'M':12, 'N':13, 'O':14, 'P':15, 'Q':16, 'R':17, 'S':18, 'T':19, 'U':20, 'V':21, 'W':22, 'X':23, 'Y':24, 'Z':25, 'a':26, 'b':27, 'c':28, 'd':29, 'e':30, 'f':31, 'g':32, 'h':33, 'i':34, 'j':35, 'k':36, 'l':37, 'm':38, 'n':39, 'o':40, 'p':41, 'q':42, 'r':43, 's':44, 't':45, 'u':46, 'v':47, 'w':48, 'x':49, 'y':50, 'z':51, '0':52, '1':53, '2':54, '3':55, '4':56, '5':57, '6':58, '7':59, '8':60, '9':61, '+':62, '/':63 }
